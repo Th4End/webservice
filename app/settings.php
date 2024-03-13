@@ -22,10 +22,20 @@ return function (ContainerBuilder $containerBuilder) {
                     'level' => Logger::DEBUG,
                 ],
                 'db' => [
-                    "host" => "127.0.0.1",
-                    "dbname" => "ppe4_eliazid",
-                    "user" => "root",
-                    "pass" => "",
+                    'host' => '127.0.0.1',
+                    'database' => 'ppe4_eliazid',
+                    'user' => 'root',
+                    'pass' => '',
+                    'charset' => 'utf8',
+                    'collation' => 'utf8_unicode_ci',
+                    'flags' =>[
+                        //désactiver les connections persistantes
+                        PDO::ATTR_PERSISTENT => false,
+                        // activer les exceptions
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        //Émuler les états préparés 
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    ],
                 ],
             ]);
         }

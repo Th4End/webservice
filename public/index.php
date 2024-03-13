@@ -10,6 +10,10 @@ use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 
+
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+
 require __DIR__ . '/../vendor/autoload.php';
 
 // Instantiate PHP-DI ContainerBuilder
@@ -37,6 +41,8 @@ $container = $containerBuilder->build();
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
+//$app->setBasePath("/[webservice]/public");
+
 $callableResolver = $app->getCallableResolver();
 
 // Register middleware
