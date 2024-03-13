@@ -28,7 +28,7 @@ return function (App $app) {
     });
     $app->get('/db-test', function(Request $request, Response $response){
         $db = $this->get(PDO::class);
-        $sth = $db->prepare("SELECT * FROM personne_login");
+        $sth = $db->prepare("SELECT * FROM personne where id='17'");
         $sth->execute();
         $data = $sth->fetchAll(PDO::FETCH_ASSOC);
         $payload = json_encode($data);
