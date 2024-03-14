@@ -15,20 +15,33 @@ return function (App $app) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
     });
-    
-
     $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world 111!');
+
+        $response->getBody()->write('Hello world!');
         return $response;
     });
-
-    $app->group('/users', function (Group $group) {
+    $app->get('/infonominatives/{type}/{id}', function (Request $request, Response $response) {
+        if('/infomationominatives'){
+            $db = $this->get(PDO::class);
+            $sth = $db->prepare("SELECT * FROM personne");
+            $sth->execute();
+            $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+            $payload = json_encode($data);
+            $response->getBody()->write($payload);
+            return $response->withHeader('Content-Type', 'application/json');
+        }
+    });
+    $app->post('/', function (Request $request, Response $response) {
+        $response->getBody()->write('Hello world post !');
+        return $response;
+    });
+    /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);
-    });
-    $app->get('/db-test', function(Request $request, Response $response){
-        $db = $this->get(PDO::class);
-        $sth = $db->prepare("SELECT * FROM personne where id='17'");
+    });*/
+    $app->post('/test', function(Request $request, Response $response){
+        $db = $this->post(PDO::class);
+        $sth = $db->prepare("SELECT * FROM personne Where id = 17");
         $sth->execute();
         $data = $sth->fetchAll(PDO::FETCH_ASSOC);
         $payload = json_encode($data);

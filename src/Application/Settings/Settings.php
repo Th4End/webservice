@@ -20,4 +20,7 @@ class Settings implements SettingsInterface
     {
         return (empty($key)) ? $this->settings : $this->settings[$key];
     }
+    /*public function post(string $key = ''){
+        return (empty($key)) ? $this->settings : $this->settings[$key];
+    }*/
 }
