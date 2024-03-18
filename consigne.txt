@@ -1,0 +1,12 @@
+
+postman 
+GET --> return JSON ("status", "OK") --> JWT 
+faire un put, post et delete dans personne
+1 : not isset de type --> return all 
+	else if !=:
+			--> Infirmiere
+				patients
+				 administrateurs --> plante
+if not isset ->{id}:
+					return error
+					
