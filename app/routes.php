@@ -21,15 +21,23 @@ return function (App $app) {
         return $response;
     });
     $app->get('/infonominatives/{type}/{id}', function (Request $request, Response $response) {
-        if('/infomationominatives'){
+        if(isset($arg['id'])){
             $db = $this->get(PDO::class);
-            $sth = $db->prepare("SELECT * FROM personne");
+            $sth = $db->prepare("SELECT $arg FROM infirmiere");
             $sth->execute();
             $data = $sth->fetchAll(PDO::FETCH_ASSOC);
             $payload = json_encode($data);
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
-        }
+        }/*else if(isset($args ['id'])){
+            $db = $this->get(PDO::class);
+            $sth = $db->prepare("SELECT $args FROM personne");
+            $sth->execute();
+            $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+            $payload = json_encode($data);
+            $response->getBody()->write($payload);
+            return $response->withHeader('Content-Type', 'application/json');
+        }*/
     });
     $app->post('/', function (Request $request, Response $response) {
         $response->getBody()->write('Hello world post !');
