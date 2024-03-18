@@ -23,9 +23,9 @@ return function (App $app) {
     $app->get('/infonominatives/{type}/{id}', function (Request $request, Response $response) {
         if(isset($arg['id'])){
             $db = $this->get(PDO::class);
-            $sth = $db->prepare("SELECT $arg FROM infirmiere");
-            $sth->execute();
-            $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+            $requete = $db->prepare("SELECT $arg FROM infirmiere");
+            $requete->execute();
+            $data = $requete->fetchAll(PDO::FETCH_ASSOC);
             $payload = json_encode($data);
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
