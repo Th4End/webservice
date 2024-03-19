@@ -20,8 +20,8 @@ return function (App $app) {
         $response->getBody()->write('Hello world!');
         return $response;
     });
-    $app->get('/infonominatives[/{type}[/{id}]]', function (Request $request, Response $response, $arg) {
-
+    $app->get('/infonominatives[/{type}[/{id}]]', function (Request $request, Response $response, $arg,$logger,$exception, $args, $type) {
+        $type = array('infirmiere', 'patient','administrateur');
         if(!isset($arg['id']) && !isset($arg['type'])){
             $db = $this->get(PDO::class);
             $sth = $db->prepare("SELECT * from personne");
@@ -30,7 +30,9 @@ return function (App $app) {
             $payload = json_encode($data);
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
-        }else if(!isset(strcmp($arg['type']))){
+        }
+        else if(strcmp($type, $args['type'])){
+            $logger->error($exception->getMessage());
             $payload = ['error' => $exception->getMessage()];
             $response->getBody()->write(json_encode($payload));
         }
