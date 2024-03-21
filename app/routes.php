@@ -20,8 +20,8 @@ return function (App $app) {
         $response->getBody()->write('Hello world!');
         return $response;
     });
-    $app->get('/infonominatives[/{type}[/{id}]]', function (Request $request, Response $response, $arg,$logger,$exception, $args, $type) {
-        $type = array('infirmiere', 'patient','administrateur');
+    $app->get('/infonominatives[/{type}[/{id}]]', function (Request $request, Response $response, $arg) {
+        $type = array('infirmiere', 'patient','administrateur','infirmieres','patients','administrateurs');
         if(!isset($arg['id']) && !isset($arg['type'])){
             $db = $this->get(PDO::class);
             $sth = $db->prepare("SELECT * from personne");
@@ -31,24 +31,16 @@ return function (App $app) {
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
         }
-        else if(strcmp($type, $args['type'])){
-            $logger->error($exception->getMessage());
-            $payload = ['error' => $exception->getMessage()];
-            $response->getBody()->write(json_encode($payload));
-        }
-        else if(isset($arg['id'])){
-            $db = $this->get(PDO::class);
-            $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (SELECT id from infirmiere)");
-            $sth->execute();
-            $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-            $payload = json_encode($data);
-            $response->getBody()->write($payload);
-            return $response->withHeader('Content-Type', 'application/json');
-        }
-        else if(isset($arg['type']) && !isset($arg['id'])){
-            //var_dump($arg['type']); exit();
-            switch($arg['type']){
-                case 'infirmieres':
+        else
+        { 
+            if(!in_array($type, $arg['type']))
+            {
+                
+            }
+            else
+            {
+                 if(isset($arg['id']))
+                {
                     $db = $this->get(PDO::class);
                     $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (SELECT id from infirmiere)");
                     $sth->execute();
@@ -56,29 +48,46 @@ return function (App $app) {
                     $payload = json_encode($data);
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json');
-                    break;
-                case 'patients':
-                    $db = $this->get(PDO::class);
-                    $sth = $db->prepare("SELECT * from patient");
-                    $sth->execute();
-                    $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-                    $payload = json_encode($data);
-                    $response->getBody()->write($payload);
-                    return $response->withHeader('Content-Type', 'application/json');
-                    break;
-                case 'administrateurs':
-                    $db = $this->get(PDO::class);
-                    $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (Select id from administrateur)");
-                    $sth->execute();
-                    $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-                    $payload = json_encode($data);
-                    $response->getBody()->write($payload);
-                    return $response->withHeader('Content-Type', 'application/json');
-                    break;
+                }
+            
+            else 
+            {
+                if(isset($arg['type']) && !isset($arg['id']))
+                {
+                   //var_dump($arg['type']); exit();
+                    switch($arg['type']){
+                       case 'infirmieres':
+                                $db = $this->get(PDO::class);
+                                $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (SELECT id from infirmiere)");
+                                $sth->execute();
+                                $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+                                $payload = json_encode($data);
+                                $response->getBody()->write($payload);
+                                return $response->withHeader('Content-Type', 'application/json');
+                        break;
+                        case 'patients':
+                                $db = $this->get(PDO::class);
+                                $sth = $db->prepare("SELECT * from patient");
+                                $sth->execute();
+                                $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+                                $payload = json_encode($data);
+                                $response->getBody()->write($payload);
+                                return $response->withHeader('Content-Type', 'application/json');
+                        break;
+                            case 'administrateurs':
+                              $db = $this->get(PDO::class);
+                              $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (Select id from administrateur)");
+                              $sth->execute();
+                              $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+                              $payload = json_encode($data);
+                              $response->getBody()->write($payload);
+                              return $response->withHeader('Content-Type', 'application/json');
+                           break;
+                        }
+                    }
             }
         }
-       
-    });
+}});
     $app->post('/', function (Request $request, Response $response) {
         $response->getBody()->write('Hello world post !');
         return $response;
