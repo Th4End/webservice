@@ -33,16 +33,17 @@ return function (App $app) {
         }
         else
         { 
-            if(!in_array($type, $arg['type']))
+            if(!in_array($arg['type'],$type))
             {
-                
+                return $response->withStatus(404);
             }
             else
             {
                  if(isset($arg['id']))
                 {
+                    //var_dump($arg['type'],$arg['id']); exit();
                     $db = $this->get(PDO::class);
-                    $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (SELECT id from infirmiere)");
+                    $sth = $db->prepare("SELECT".$arg['id']."FROM".$arg['type']);
                     $sth->execute();
                     $data = $sth->fetchAll(PDO::FETCH_ASSOC);
                     $payload = json_encode($data);
