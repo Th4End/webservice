@@ -51,31 +51,33 @@ return function (App $app) {
                             case 'infirmiere':
                                 //var_dump($arg['id']); exit();
                                 $db = $this->get(PDO::class); 
-                                $sth = $db->prepare("SELECT * from personne p ,infirmiere i where id = ? and p.id=i.id "); 
-                                $sth->bindParam('id', $arg['id']); 
-                                $sth->execute(); 
-                                $data = $sth->fetchAll(PDO::FETCH_ASSOC); $payload = json_encode($data); 
-                                $response->getBody()->write($payload); 
-                                return $response->withHeader('Content-Type', 'application/json');
+                                $sth = $db->prepare("SELECT * from personne p ,infirmiere i where p.id = :vID and p.id=i.id "); 
+                                $sth->bindParam(':vID',$arg['id']); 
                                 break;
                             case 'patient':
                                 $db = $this->get(PDO::class); 
-                                $sth = $db->prepare("SELECT * from personne p ,patient t where id = ? and p.id=t.id "); 
-                                $sth->bindParam('id', $arg['id']); 
-                                $sth->execute(); 
-                                $data = $sth->fetchAll(PDO::FETCH_ASSOC); $payload = json_encode($data); 
-                                $response->getBody()->write($payload); 
-                                return $response->withHeader('Content-Type', 'application/json');
+                                $sth = $db->prepare("SELECT * from personne p ,patient t where p.id = :vID and p.id=t.id "); 
+                                $sth->bindParam(':vID',$arg['id']); 
+                                
                                 break;
                             case 'administrateur':
                                 $db = $this->get(PDO::class); 
-                                $sth = $db->prepare("SELECT * from personne p , administrateur a where id = ? and p.id=a.id "); 
-                                $sth->bindParam('id', $arg['id']); 
-                                $sth->execute(); 
-                                $data = $sth->fetchAll(PDO::FETCH_ASSOC); $payload = json_encode($data); 
-                                $response->getBody()->write($payload); 
-                                return $response->withHeader('Content-Type', 'application/json');
+                                $sth = $db->prepare("SELECT * from personne p , administrateur a where p.id = :vID and p.id=a.id "); 
+                                $sth->bindParam(':vID', $arg['id']); 
                                 break;
+                                
+                            }
+                            $sth->execute(); 
+                            $data = $sth->fetchAll(PDO::FETCH_ASSOC); 
+                            if(!$data)
+                            {
+                                return $response->withStatus(400);
+                            }
+                            else{
+                                $payload = json_encode($data); 
+                                $response->getBody()->write($payload);
+                                return $response->withHeader('Content-Type', 'application/json');
+
                             }
                     }
                 }
@@ -118,21 +120,28 @@ return function (App $app) {
             }
         }
 }});
-    $app->post('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world post !');
-        return $response;
+    $app->post('/visite[/{id}[/{idpatient}[/{idinfirmiere}[/{date_prevue}[/{date_reelle}[/{duree}[/{compte_rendu_infirmiere}[/{compte_rendu_patient}]]]]]]]]', function (Request $request, Response $response, $arg) {
+        $db = $this->post(PDO::class);
+        $sth = $db->prepare('INSERT into visite (id, idpatient, idinfirmiere, date_prevue, date_reelle, duree,compte_rendu_infirmiere, compte_rendu_patient)  
+        Values (:id, :idpatient, :idinfirmiere, :date_prevue, date_reelle, :duree,compte_rendu_infirmiere, :compte_rendu_patient)');
+        $sth->bindParam(':id', $arg['id']);
+        $sth->bindParam(':idpatient', $arg['idpatient']);
+        $sth->bindParam(':idinfirmiere', $arg['idinfirmiere']);
+        $sth->bindParam(':date_prevue', $arg['date_prevue']);
+        $sth->bindParam(':date_reelle', $arg['date_reelle']);
+        $sth->bindParam(':duree', $arg['duree']);
+        $sth->bindParam(':compte_rendu_infirmiere', $arg['compte_rendu_infirmiere']);
+        $sth->bindParam(':compte_rendu_patient', $arg['compte_rendu_patient']);
+        var_dump($arg['id'], $arg['idpatient'], $arg['date_prevue'], $arg['date_reelle'], $arg['duree'],$arg['compte_rendu_infirmiere'],$arg['compte_rendu_patient']);exit();
+        $sth->execute();
+        return $response->withStatus(201);
     });
     /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);
     });*/
     $app->post('/test', function(Request $request, Response $response){
-        $db = $this->post(PDO::class);
-        $sth = $db->prepare("SELECT * FROM personne Where id = 17");
-        $sth->execute();
-        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-        $payload = json_encode($data);
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write('gelo');
+        return $response;
     });
 };
