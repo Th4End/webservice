@@ -15,7 +15,15 @@ return function (App $app) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
     });
-    $app->get('/', function (Request $request, Response $response) {
+    /*
+    $app->post('/visite', function (Request $request, Response $response) {
+        $data = (array)$request->getParsedBody();
+
+        $response->getBody()->write($data['idpatient']);
+        return $response;
+    });
+    */
+    $app->get('/', function (Request $request, Response $response,$arg) {
 
         $response->getBody()->write('Hello world!');
         return $response;
@@ -120,21 +128,17 @@ return function (App $app) {
             }
         }
 }});
-    $app->post('/visite[/{id}[/{idpatient}[/{idinfirmiere}[/{date_prevue}[/{date_reelle}[/{duree}[/{compte_rendu_infirmiere}[/{compte_rendu_patient}]]]]]]]]', function (Request $request, Response $response, $arg) {
+    $app->post('/visite', function (Request $request, Response $response, $arg) {
         $db = $this->post(PDO::class);
-        $sth = $db->prepare('INSERT into visite (id, idpatient, idinfirmiere, date_prevue, date_reelle, duree,compte_rendu_infirmiere, compte_rendu_patient)  
-        Values (:id, :idpatient, :idinfirmiere, :date_prevue, date_reelle, :duree,compte_rendu_infirmiere, :compte_rendu_patient)');
-        $sth->bindParam(':id', $arg['id']);
-        $sth->bindParam(':idpatient', $arg['idpatient']);
-        $sth->bindParam(':idinfirmiere', $arg['idinfirmiere']);
-        $sth->bindParam(':date_prevue', $arg['date_prevue']);
-        $sth->bindParam(':date_reelle', $arg['date_reelle']);
-        $sth->bindParam(':duree', $arg['duree']);
-        $sth->bindParam(':compte_rendu_infirmiere', $arg['compte_rendu_infirmiere']);
-        $sth->bindParam(':compte_rendu_patient', $arg['compte_rendu_patient']);
-        var_dump($arg['id'], $arg['idpatient'], $arg['date_prevue'], $arg['date_reelle'], $arg['duree'],$arg['compte_rendu_infirmiere'],$arg['compte_rendu_patient']);exit();
+        $data = (array)$request->getParsedBody();
+        $sth = $db->prepare('INSERT into visite (idpatient, idinfirmiere, date_prevue, duree)  
+        Values (:idpatient, :idinfirmiere, :date_prevue, :duree)');
+        $sth->bindParam(':idpatient', $data['idpatient']);
+        $sth->bindParam(':idinfirmiere', $data['idinfirmiere']);
+        $sth->bindParam(':date_prevue', $data['date_prevue']);
+        $sth->bindParam(':duree', $data['duree']);
         $sth->execute();
-        return $response->withStatus(201);
+        return $response->getBody()->write('201');
     });
     /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
