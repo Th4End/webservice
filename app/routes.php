@@ -128,17 +128,16 @@ return function (App $app) {
             }
         }
 }});
-    $app->post('/visite', function (Request $request, Response $response, $arg) {
-        $db = $this->post(PDO::class);
+    $app->post('/visite', function (Request $request, Response $response) {
+        $db = $this->get(PDO::class);
         $data = (array)$request->getParsedBody();
-        $sth = $db->prepare('INSERT into visite (idpatient, idinfirmiere, date_prevue, duree)  
-        Values (:idpatient, :idinfirmiere, :date_prevue, :duree)');
-        $sth->bindParam(':idpatient', $data['idpatient']);
-        $sth->bindParam(':idinfirmiere', $data['idinfirmiere']);
-        $sth->bindParam(':date_prevue', $data['date_prevue']);
-        $sth->bindParam(':duree', $data['duree']);
+        $sth = $db->prepare('INSERT into visite (patient,infirmiere,date_prevue,duree) Values (:patient,:infirmiere,:date_prevue,:duree)');
+        $sth->bindParam(':patient', $data['patient']);
+        $sth->bindParam(':infirmiere',$data['infirmiere']);
+        $sth->bindParam(':date_prevue',$data['date_prevue']);
+        $sth->bindParam(':duree',$data['duree']);
         $sth->execute();
-        return $response->getBody()->write('201');
+        return $response->withStatus(201);
     });
     /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
