@@ -32,7 +32,7 @@ return function (ContainerBuilder $containerBuilder) {
                         //désactiver les connections persistantes
                         PDO::ATTR_PERSISTENT => false,
                         // activer les exceptions
-                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        //PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
                         //Émuler les états préparés 
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
                     ],
