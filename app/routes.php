@@ -130,6 +130,7 @@ return function (App $app) {
 }});
     $app->post('/visite', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
         $data = (array)$request->getParsedBody();
         $sth = $db->prepare('INSERT into visite (patient,infirmiere,date_prevue,duree) Values (:patient,:infirmiere,:date_prevue,:duree)');
         $sth->bindParam(':patient', $data['patient']);
