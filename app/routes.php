@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+use \Tuupola\Middleware\JwtAuthentication;
+use \Tuupola\Base62;
 
 return function (App $app) {
     
@@ -140,6 +144,50 @@ return function (App $app) {
         $sth->execute();
         return $response->withStatus(201);
     });
+
+    $app->get('/identification[/{login}[/{mdp}]]', function(Request $request, Response $response, $arg){
+        $db = $this->get(PDO::class);
+        $sth = $db->prepare('SELECT login,mp from personne_login where login = :login and mp = :mdp');
+        $sth->bindParam(':login',$arg['login']);
+        $sth->bindParam(':mp',$arg['mdp']);
+        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+        if(!$arg['login'] && !$arg['mdp']){
+            return $response->withStatus(404);
+        }else{
+            $requete = $db->prepare('SELECT mp from personne_login where login = :login');
+            $requete->bindParam(':login', $arg['login']);
+            $requete->execute();
+            $data = $requete->fetchAll(PDO::FETCH_ASSOC);
+            $mdp = $data[0]['mp'];
+            $bonjour = md5($arg['mdp']);
+            //var_dump($data);
+            //var_dump($bonjour);exit();
+            if($bonjour === $mdp){
+                return $response->withStatus(200);
+                $now = new DateTime();
+                $future = new DateTime("now +2 hours");
+                $jti = Base62::encode(random_bytes(16));
+                $secret = "12345test";
+                $payload = [
+                    "jti" => $jti,
+                    "iat" => $now->getTimestamp(),
+                    "nbf" => $future->getTimestamp()
+                ];
+
+            }else{
+                if($bonjour != $data){
+                    return $response->withStatus(403);
+                }
+            }
+       // var_dump($arg['login']);exit();
+        //var_dump($data);exit();
+        return $response->withHeader('Content-Type','application/json');
+        }
+        
+        
+
+    });
+    
     /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);

@@ -10,3 +10,8 @@ faire un put, post et delete dans personne
 if not isset ->{id}:
 					return error
 					
+get identifiant => {
+	if ok jwt => identifiant, son role, 
+	return en token
+	route doit avoir une identification 
+}
