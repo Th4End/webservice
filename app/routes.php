@@ -154,40 +154,51 @@ return function (App $app) {
         if(!$arg['login'] && !$arg['mdp']){
             return $response->withStatus(404);
         }else{
-            $requete = $db->prepare('SELECT mp from personne_login where login = :login');
-            $requete->bindParam(':login', $arg['login']);
-            $requete->execute();
-            $data = $requete->fetchAll(PDO::FETCH_ASSOC);
+            $requete1 = $db->prepare('SELECT mp from personne_login where login = :login');
+            $requete1->bindParam(':login', $arg['login']);
+            $requete1->execute();
+            $data = $requete1->fetchAll(PDO::FETCH_ASSOC);
+            $requete2 = $db->prepare('SELECT fonction from fonction f, personne_login p where p.login = :login and p.id = f.id');
+            $requete2->bindParam(':login',$arg['login']);
+            $requete2->execute();
+            $data1 = $requete2->fetchAll(PDO::FETCH_ASSOC);
+            $requete3 = $db->prepare('SELECT login from personne_login where login = :login');
+            $requete3->bindParam(':login',$arg['login']);
+            $requete3->execute();
+            $login = $requete3->fetchAll(PDO::FETCH_ASSOC);
+            $fonc = $data1[0]['fonction'];
+            //var_dump($data1);exit();
             $mdp = $data[0]['mp'];
             $bonjour = md5($arg['mdp']);
-            //var_dump($data);
-            //var_dump($bonjour);exit();
+            //var_dump($data);exit();
+            //var_dump($mdp);exit();
             if($bonjour === $mdp){
-                return $response->withStatus(200);
-                $now = new DateTime();
-                $future = new DateTime("now +2 hours");
-                $jti = Base62::encode(random_bytes(16));
+                $now_seconds = time();
+                $jti = hash_hmac('Sha256',$arg['login'],'secret');
+                $fonction = hash_hmac('Sha256',$fonc,'test123456');
                 $secret = "12345test";
                 $payload = [
-                    "jti" => $jti,
-                    "iat" => $now->getTimestamp(),
-                    "nbf" => $future->getTimestamp()
+                    "id" => $jti,
+                    "exp" => $now_seconds+(60*60),
+                    "fonction" => $fonction
                 ];
-
+                $jwt = JWT::encode($payload,$secret,"HS256");
+                //var_dump($jwt);exit();
+                return $response->withStatus(200)
+                                ->withHeader('Content-Type', 'application/json')
+                                ->withHeader('Authorization', 'Bearer '.$jwt);
             }else{
-                if($bonjour != $data){
+                if($bonjour != $data && $arg['login'] != $login){
                     return $response->withStatus(403);
                 }
             }
        // var_dump($arg['login']);exit();
-        //var_dump($data);exit();
-        return $response->withHeader('Content-Type','application/json');
+        //var_dump($data);exit(); 
         }
-        
-        
-
     });
-    
+    $app->get('/testjeton',function(Request $request, Response $response, $arg){
+        
+    });
     /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);

@@ -15,3 +15,6 @@ get identifiant => {
 	return en token
 	route doit avoir une identification 
 }
+méthode qui récupére le bearer, le token et l'authorization (true or false);
+valide si decode et non expirer else false 
+get test bearer
