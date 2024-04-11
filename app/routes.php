@@ -6,12 +6,16 @@ use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use PHPUnit\Framework\MockObject\Stub\ReturnReference;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use \Tuupola\Middleware\JwtAuthentication;
 use \Tuupola\Base62;
+
+use function PHPUnit\Framework\isNull;
 
 return function (App $app) {
     
@@ -174,8 +178,8 @@ return function (App $app) {
             //var_dump($mdp);exit();
             if($bonjour === $mdp){
                 $now_seconds = time();
-                $jti = hash_hmac('Sha256',$arg['login'],'secret');
-                $fonction = hash_hmac('Sha256',$fonc,'test123456');
+                $jti = $arg['login'];
+                $fonction = $fonc;
                 $secret = "12345test";
                 $payload = [
                     "id" => $jti,
@@ -184,6 +188,7 @@ return function (App $app) {
                 ];
                 $jwt = JWT::encode($payload,$secret,"HS256");
                 //var_dump($jwt);exit();
+                $request = $request->withAttribute('jwt',$jwt);
                 return $response->withStatus(200)
                                 ->withHeader('Content-Type', 'application/json')
                                 ->withHeader('Authorization', 'Bearer '.$jwt);
@@ -196,8 +201,30 @@ return function (App $app) {
         //var_dump($data);exit(); 
         }
     });
-    $app->get('/testjeton',function(Request $request, Response $response, $arg){
-        
+    $app->get('/testjeton',function(Request $request, Response $response, $args){
+        //vérification
+        $verif = false;
+        $verif= verifJWT($request);
+       
+        //$decodeJWT = JWT::decode($arr1[1], $secret, );
+
+        //$authHeader = $authorizationHeader->getValue(); //line 149 error, caused $authHeader is null
+        //$token      = $authHeader;
+        //$jwt = $request->getAttribute('jwt');
+        $secret = "12345test";
+       //var_dump($authorizationHeader);exit();
+        /*if(isNull($authorizationHeader)){
+            $response->getBody()->write('false');
+            return $response;
+        }else{
+           JWT::decode($authorizationHeader,$secret,"HS256");
+            $response->getBody()->write('true');
+            return $response;
+        }*/
+        $response->withHeader('Content-Type', 'application/json')
+                    ->getBody()->write(json_encode($verif));
+            return $response;
+
     });
     /*$app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class);
@@ -207,4 +234,42 @@ return function (App $app) {
         $response->getBody()->write('gelo');
         return $response;
     });
+
+
+
 };
+function verifJWT($request){
+
+    $vretour=false;
+    $jwt = null;
+    $authorizationHeader = $request->getHeaders();
+
+    foreach ($authorizationHeader as $name => $values) {
+            if(str_contains($name,"Authorization")){
+                
+                $arr= explode(", ", $values[0]);
+                
+                $arr1=explode(" ", $arr[0]);
+                
+                if(strcmp($arr1[0],'Bearer')==0){
+
+                    $jwt= $arr1[1];
+
+                    break;
+                }
+            }
+            
+    }
+    if(!is_null($jwt)){
+        try{
+            $decodeJWT = JWT::decode($jwt, new Key('12345test','HS256'));
+        }catch (Exception $e) {
+           
+        }
+
+
+    }
+        
+    return $vretour;
+        
+}
