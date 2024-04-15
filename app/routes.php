@@ -13,10 +13,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use \Tuupola\Middleware\JwtAuthentication;
-use \Tuupola\Base62;
 
 use function PHPUnit\Framework\isNull;
-
+$droit=0;
 return function (App $app) {
     
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -37,6 +36,10 @@ return function (App $app) {
         return $response;
     });
     $app->get('/infonominatives[/{type}[/{id}]]', function (Request $request, Response $response, $arg) {
+        $verif= verifJWT($request);
+if($verif)
+{
+         
         $type = array('infirmiere', 'patient','administrateur','infirmieres','patients','administrateurs');
         $typeAvecId = array('infirmiere', 'patient','administrateur',);
         if(!isset($arg['id']) && !isset($arg['type'])){
@@ -135,7 +138,13 @@ return function (App $app) {
                     }
             }
         }
-}});
+    }
+}else{
+    return $response->withStatus(403);
+}
+
+
+});
     $app->post('/visite', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
@@ -162,7 +171,7 @@ return function (App $app) {
             $requete1->bindParam(':login', $arg['login']);
             $requete1->execute();
             $data = $requete1->fetchAll(PDO::FETCH_ASSOC);
-            $requete2 = $db->prepare('SELECT fonction from fonction f, personne_login p where p.login = :login and p.id = f.id');
+            $requete2 = $db->prepare('SELECT fonction from personne f, personne_login p where p.login = :login and p.id = f.id');
             $requete2->bindParam(':login',$arg['login']);
             $requete2->execute();
             $data1 = $requete2->fetchAll(PDO::FETCH_ASSOC);
@@ -211,7 +220,7 @@ return function (App $app) {
         //$authHeader = $authorizationHeader->getValue(); //line 149 error, caused $authHeader is null
         //$token      = $authHeader;
         //$jwt = $request->getAttribute('jwt');
-        $secret = "12345test";
+        //$secret = "12345test";
        //var_dump($authorizationHeader);exit();
         /*if(isNull($authorizationHeader)){
             $response->getBody()->write('false');
@@ -239,7 +248,7 @@ return function (App $app) {
 
 };
 function verifJWT($request){
-
+    $now_seconds = time()+(60*60);
     $vretour=false;
     $jwt = null;
     $authorizationHeader = $request->getHeaders();
@@ -263,11 +272,15 @@ function verifJWT($request){
     if(!is_null($jwt)){
         try{
             $decodeJWT = JWT::decode($jwt, new Key('12345test','HS256'));
+            //var_dump($decodeJWT);exit();
+            if($decodeJWT->exp <= $now_seconds){
+                $vretour = true;
+            }
+            $droit=$decodeJWT->fonction;
+            //var_dump($decodeJWT);exit();
         }catch (Exception $e) {
-           
+
         }
-
-
     }
         
     return $vretour;

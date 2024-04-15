@@ -18,3 +18,5 @@ get identifiant => {
 méthode qui récupére le bearer, le token et l'authorization (true or false);
 valide si decode et non expirer else false 
 get test bearer
+
+patient : 0 / infirmiere : 1 / infirmiere en chef : 2 / administrateur : 3
