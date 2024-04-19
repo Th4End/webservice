@@ -13,11 +13,11 @@ deny from all
   RewriteRule (.*) public/$1 [L]
   RewriteRule .* [env=HTTP_AUTHORIZATION:%{HTTP:AUTHORIZATION}]
 # Redirect to HTTPS  
- RewriteEngine On
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
-   RewriteCond %{HTTPS} off
-   RewriteRule ^(.*)$ https://%{127.0.0.1}%{webservice/} [L,R=301]
-   RewriteCond %{index.php} !-d 
-   RewriteCond %{index.php} !-f
-   RewriteRule
+  #RewriteEngine On
+   #RewriteCond %{HTTP:X-Forwarded-Proto} !https
+   # RewriteCond %{HTTPS} off
+   #RewriteRule ^(.*)$ https://%{127.0.0.1}%{webservice/} [L,R=301]
+    #RewriteCond %{index.php} !-d 
+    #RewriteCond %{index.php} !-f
+    #RewriteRule . index.php [L]`
 </IfModule>
