@@ -12,12 +12,4 @@ deny from all
   RewriteRule ^$ public/ [L]
   RewriteRule (.*) public/$1 [L]
   RewriteRule .* [env=HTTP_AUTHORIZATION:%{HTTP:AUTHORIZATION}]
-# Redirect to HTTPS  
- RewriteEngine On
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
-   RewriteCond %{HTTPS} off
-   RewriteRule ^(.*)$ https://%{127.0.0.1}%{webservice/} [L,R=301]
-   RewriteCond %{index.php} !-d 
-   RewriteCond %{index.php} !-f
-   RewriteRule
 </IfModule>
