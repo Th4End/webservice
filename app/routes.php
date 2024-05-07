@@ -49,13 +49,16 @@ return function (App $app) {
         //$droit = 0;
         $lidentification=new identification();
         $verif= verifJWT($request, $lidentification);
-        //var_dump($lidentification->leDroit);exit();
+        //var_dump($lidentification->id);exit();
+        //var_dump($verif);
+
 if($verif)
 {
         
-        $type = array('infirmiere', 'patient','administrateur','infirmieres','patients','administrateurs');
-        $typeAvecId = array('infirmiere', 'patient','administrateur',);
+        $type = array('patient','infirmiere','administrateur','infirmieres','patients','administrateurs');
+        $typeAvecId = array('infirmiere', 'patient','administrateur');
         if(!isset($arg['id']) && !isset($arg['type'])){
+            
             $db = $this->get(PDO::class);
             $sth = $db->prepare("SELECT * from personne");
             $sth->execute();
@@ -68,18 +71,25 @@ if($verif)
         { 
             if(!in_array($arg['type'],$type))
             {
+
                 return $response->withStatus(404);
             }
             else
             {
                  if(isset($lidentification->id))
                 {
-                    if(!in_array($arg['type'],$typeAvecId))
+                    
+                    
+                    if(in_array($arg['type'],$typeAvecId) && !isset($arg['id']))
                     {
+                       
                         return $response->withStatus(404);
                     }
-                    else{
-                        switch($arg['type']){
+                    
+                    if(in_array($arg['type'],$typeAvecId) && isset($arg['id'])){
+                       
+                        switch($arg['type'])
+                        {
                             case 'infirmiere':
                                 if($lidentification->leDroit == 1){
                                  $db = $this->get(PDO::class); 
@@ -112,7 +122,7 @@ if($verif)
                                     if($lidentification->leDroit == 3 || $lidentification->leDroit == 2 || $lidentification->leDroit == 1){
                                         $db = $this->get(PDO::class); 
                                         $sth = $db->prepare("SELECT * from personne p ,patient t where p.id = :vID and p.id=t.id "); 
-                                        $sth->bindParam(':vID',$lidentification->id); 
+                                        $sth->bindParam(':vID',$arg['id']); 
                                     }else{
                                         return $response->withStatus(403);
                                     }
@@ -125,51 +135,53 @@ if($verif)
                                 if($lidentification->leDroit == 3){
                                     $db = $this->get(PDO::class); 
                                     $sth = $db->prepare("SELECT * from personne p , administrateur a where p.id = :vID and p.id=a.id "); 
-                                    $sth->bindParam(':vID', $lidentification->id); 
+                                    $sth->bindParam(':vID', $arg['id']); 
                                 }else{
                                     return $response->withStatus(403);
                                 }
                              
                                 break;
+                               
                                 
-                            }
-                            $sth->execute(); 
-                            $data = $sth->fetchAll(PDO::FETCH_ASSOC); 
-                            if(!$data)
-                            {
-                                return $response->withStatus(400);
-                            }
-                            else{
-                                $payload = json_encode($data); 
-                                $response->getBody()->write($payload);
-                                return $response->withHeader('Content-Type', 'application/json');
+                        }
+                        
+                        $sth->execute(); 
+                        $data = $sth->fetchAll(PDO::FETCH_ASSOC); 
+                        if(!$data)
+                        {
+                            return $response->withStatus(400);
+                        }
+                        else{
+                            $payload = json_encode($data); 
+                            $response->getBody()->write($payload);
+                            return $response->withHeader('Content-Type', 'application/json');
 
-                            }
+                        }
+                           
+                            
+                            
                     }
-                }
-            
-            else 
-            {
-                if(isset($arg['type']) && !isset($arg['id']))
-                {
-                   //var_dump($arg['type']); exit();
-                    switch($arg['type']){
-                       case ('infirmieres'):
-                                if( $lidentification->leDroit == 3 || $lidentification->leDroit == 2){
-                                    $db = $this->get(PDO::class);
-                                    $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (SELECT id from infirmiere)");
-                                    $sth->execute();
-                                    $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-                                    $payload = json_encode($data);
-                                    $response->getBody()->write($payload);
-                                    return $response->withHeader('Content-Type', 'application/json');
-                                }else{
-                                    return $response->withStatus(403);
-                                }
-                                //var_dump($lidentification->leDroit);exit();
-                                
+                    
+                    if(isset($arg['type']) && !isset($arg['id']))
+                    { 
+                        
+                    
+                   
+                        switch($arg['type']){
+                       case 'infirmieres':
+                        if($lidentification->leDroit == 2 || $lidentification->leDroit == 3){
+                            $db = $this->get(PDO::class);
+                            $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (SELECT id from infirmiere)");
+                            $sth->execute();
+                            $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+                            $payload = json_encode($data);
+                            $response->getBody()->write($payload);
+                            return $response->withHeader('Content-Type', 'application/json');
+                        }else{
+                            return $response->withStatus(403);
+                        } 
                         break;
-                        case ('patients'):
+                        case 'patients':
                                 if($lidentification->leDroit == 3 || $lidentification->leDroit == 2){
                                 $db = $this->get(PDO::class);
                                 $sth = $db->prepare("SELECT * from patient");
@@ -183,7 +195,7 @@ if($verif)
                                 }
                                 
                         break;
-                            case ('administrateurs'):
+                            case 'administrateurs':
                                 if( $lidentification->leDroit == 3){
                                     $db = $this->get(PDO::class);
                                     $sth = $db->prepare("SELECT nom, prenom FROM personne where id in (Select id from administrateur)");
@@ -199,10 +211,15 @@ if($verif)
                            break;
                         }
                     }
+                }
+                else{
+                    
+                }
             }
         }
     }
-}else{
+    
+else{
     return $response->withStatus(403);
 }
 
