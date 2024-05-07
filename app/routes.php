@@ -320,9 +320,7 @@ if($verif)
         return $response;
     });
 
-    $app->delete('/visite',function(Request $request, Response $response){
-
-    });
+ 
 
 
 
