@@ -337,13 +337,22 @@ else{
         return $response;
     });
     //delete
-    $app->delete('/suppression/{id}', function(Request $request, Response $response){
+    $app->delete('/suppression/{type}/{id}', function(Request $request, Response $response, $arg){
         $lidentification=new identification();
         $verif= verifJWT($request, $lidentification);
         if($verif){
             if($lidentification->leDroit == 3){
-                $requete ="DELETE"
+                $db = $this->get(PDO::class);
+                $requete = $db->prepare("DELETE from :type where id = :id");
+                $requete->bindParam(':type',$arg['type']);
+                $requete->bindParam(':id',$arg['id']);
+                $requete->execute();
+                return $response->withStatus(200);
+            }else{
+                return $response->withStatus(403);
             }
+        }else{
+            return $response->withStatus(404);
         }
         
     });
