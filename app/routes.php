@@ -336,7 +336,17 @@ else{
         $response->getBody()->write('gelo');
         return $response;
     });
-
+    //delete
+    $app->delete('/suppression/{id}', function(Request $request, Response $response){
+        $lidentification=new identification();
+        $verif= verifJWT($request, $lidentification);
+        if($verif){
+            if($lidentification->leDroit == 3){
+                $requete ="DELETE"
+            }
+        }
+        
+    });
  
 
 
