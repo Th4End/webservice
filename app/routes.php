@@ -340,11 +340,12 @@ else{
     $app->delete('/suppression/{type}/{id}', function(Request $request, Response $response, $arg){
         $lidentification=new identification();
         $verif= verifJWT($request, $lidentification);
+        $tableName = $arg['type'];
         if($verif){
             if($lidentification->leDroit == 3){
                 $db = $this->get(PDO::class);
-                $requete = $db->prepare("DELETE from :type where id = :id");
-                $requete->bindParam(':type',$arg['type']);
+                $requete = $db->prepare("DELETE from $tableName where id = :id");
+                //$requete->bindParam(':type',$arg['type']);
                 $requete->bindParam(':id',$arg['id']);
                 $requete->execute();
                 return $response->withStatus(200);
