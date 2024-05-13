@@ -344,6 +344,8 @@ else{
         if($verif){
             if($lidentification->leDroit == 3){
                 $db = $this->get(PDO::class);
+                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+                $data = (array)$request->getParsedBody();
                 $requete = $db->prepare("DELETE from $NomdeLaTable where id = :id");
                 //$requete->bindParam(':type',$arg['type']);
                 $requete->bindParam(':id',$arg['id']);
@@ -356,6 +358,24 @@ else{
             return $response->withStatus(404);
         }
         
+    });
+    $app->put('/createuser', function(Request $request, Response $response, $arg){
+        $lidentification=new identification();
+        $verif= verifJWT($request, $lidentification);
+        if($verif){
+            $db = $this->get(PDO::class);
+            $data = (array)$request->getParsedBody();
+            $requete = $db->prepare('INSERT into personne (nom,prenom,sexe,date_naiss,fonction) values(:nom,:prenom,:sexe,:date_naiss,:fonction)');
+            $requete->bindParam(':nom', $data['nom']);
+            $requete->bindParam(':prenom', $data['prenom']);
+            $requete->bindParam(':sexe', $data['sexe']);
+            $requete->bindParam(':date_naiss', $data['date_naiss']);
+            $requete->bindParam(':fonction', $data['fonction']);
+            $requete->execute();
+            return $response->withstatus(201);
+        }else{
+            return $response->withstatus(403);
+        }
     });
  
 
