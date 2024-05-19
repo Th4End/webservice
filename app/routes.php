@@ -359,10 +359,10 @@ else{
         }
         
     });
-    $app->put('/createuser', function(Request $request, Response $response, $arg){
+    $app->put('/creerpersonne', function(Request $request, Response $response, $arg){
         $lidentification=new identification();
         $verif= verifJWT($request, $lidentification);
-        if($verif){
+        if($verif && $lidentification->leDroit === 3){
             $db = $this->get(PDO::class);
             $data = (array)$request->getParsedBody();
             $requete = $db->prepare('INSERT into personne (nom,prenom,sexe,date_naiss,fonction) values(:nom,:prenom,:sexe,:date_naiss,:fonction)');
@@ -373,6 +373,32 @@ else{
             $requete->bindParam(':fonction', $data['fonction']);
             $requete->execute();
             return $response->withstatus(201);
+        }else{
+            return $response->withstatus(403);
+        }
+    });
+    $app->put('/creeruser', function(Request $request, Response $response, $arg){
+        $lidentification = new identification();
+        $verif = verifJWT($request, $lidentification);
+        if($verif && $lidentification->leDroit === 3){
+            $db = $this->get(PDO::class);
+            $data = (array)$request->getParsedBody();
+            $sql = $db->prepare('SELECT id from personne where prenom = :login');
+            $sql->bindParam(':login',$data['login']);
+            $sql->execute();
+            $id = $sql->fetch(PDO::FETCH_ASSOC);
+            if($id){
+                $mp = md5($data['mp']);
+                var_dump($id['id']);exit();
+                $requete = $db->prepare('INSERT into personne_login (id,login,mp) values(:id,:login,:mp)');
+                $requete->bindParam(':id',$id['id']);
+                $requete->bindParam(':login',$data['login']);
+                $requete->bindParam(':mp',$mp);
+                $requete->execute();
+                return $response->withstatus(201);
+            }else{
+                return $response->withStatus(204);
+            }
         }else{
             return $response->withstatus(403);
         }
