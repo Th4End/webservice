@@ -1,28 +1,62 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : dim. 19 mai 2024 à 00:16
+-- Version du serveur : 8.0.31
+-- Version de PHP : 8.2.0
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-CREATE DATABASE IF NOT EXISTS `w639v7_ppe4` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `w639v7_ppe4`;
+--
+-- Base de données : `ppe4_eliazid`
+--
 
-CREATE TABLE `administrateur` (
-  `id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `administrateur`
+--
+
+DROP TABLE IF EXISTS `administrateur`;
+CREATE TABLE IF NOT EXISTS `administrateur` (
+  `id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `administrateur`
+--
 
 INSERT INTO `administrateur` (`id`) VALUES
 (8);
 
-CREATE TABLE `badge` (
-  `id` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `badge`
+--
+
+DROP TABLE IF EXISTS `badge`;
+CREATE TABLE IF NOT EXISTS `badge` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `uid` varchar(25) NOT NULL,
-  `actif` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `actif` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `badge`
+--
 
 INSERT INTO `badge` (`id`, `uid`, `actif`) VALUES
 (1, '12345678', 1),
@@ -54,10 +88,22 @@ INSERT INTO `badge` (`id`, `uid`, `actif`) VALUES
 (28, '2312481139913', 1),
 (29, '5520969932', 1);
 
-CREATE TABLE `categorie_indisponibilite` (
-  `id` int(11) NOT NULL,
-  `libelle` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `categorie_indisponibilite`
+--
+
+DROP TABLE IF EXISTS `categorie_indisponibilite`;
+CREATE TABLE IF NOT EXISTS `categorie_indisponibilite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `libelle` varchar(250) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `categorie_indisponibilite`
+--
 
 INSERT INTO `categorie_indisponibilite` (`id`, `libelle`) VALUES
 (1, 'Mariage/Pacs'),
@@ -83,21 +129,45 @@ INSERT INTO `categorie_indisponibilite` (`id`, `libelle`) VALUES
 (21, 'Congé pour création d’entreprise'),
 (23, 'Congé d’enseignement de recherche et d’innovation');
 
-CREATE TABLE `categ_soins` (
-  `id` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `categ_soins`
+--
+
+DROP TABLE IF EXISTS `categ_soins`;
+CREATE TABLE IF NOT EXISTS `categ_soins` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `libel` text NOT NULL,
-  `description` mediumtext
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `description` mediumtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `categ_soins`
+--
 
 INSERT INTO `categ_soins` (`id`, `libel`, `description`) VALUES
 (1, 'Soins de pratique courante', ''),
 (2, 'Soins spécialisés', 'Soins demandant une actualisation des compétences, un protocole thérapeutique, l\'élaboration et la tenue des dossiers de soins, la transmission d\'informations au médecin prescripteur.');
 
-CREATE TABLE `chambre_forte` (
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `chambre_forte`
+--
+
+DROP TABLE IF EXISTS `chambre_forte`;
+CREATE TABLE IF NOT EXISTS `chambre_forte` (
   `badge` varchar(25) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `acces_ok` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `acces_ok` tinyint(1) NOT NULL,
+  PRIMARY KEY (`badge`,`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `chambre_forte`
+--
 
 INSERT INTO `chambre_forte` (`badge`, `date`, `acces_ok`) VALUES
 ('0449436A643481', '2017-02-20 21:49:26', 0),
@@ -189,28 +259,59 @@ INSERT INTO `chambre_forte` (`badge`, `date`, `acces_ok`) VALUES
 ('444444', '2017-02-17 17:55:30', 0),
 ('aaaa12', '2017-02-20 21:48:38', 0);
 
-CREATE TABLE `convalescence` (
-  `id_patient` int(11) NOT NULL,
-  `id_lieux` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `convalescence`
+--
+
+DROP TABLE IF EXISTS `convalescence`;
+CREATE TABLE IF NOT EXISTS `convalescence` (
+  `id_patient` int NOT NULL,
+  `id_lieux` int NOT NULL,
   `date_deb` date NOT NULL,
   `date_fin` date DEFAULT NULL,
   `chambre` varchar(50) DEFAULT NULL,
-  `tel_directe` char(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `tel_directe` char(10) DEFAULT NULL,
+  PRIMARY KEY (`id_patient`,`id_lieux`,`date_deb`),
+  KEY `id_lieux` (`id_lieux`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-CREATE TABLE `indisponibilite` (
-  `infirmiere` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `indisponibilite`
+--
+
+DROP TABLE IF EXISTS `indisponibilite`;
+CREATE TABLE IF NOT EXISTS `indisponibilite` (
+  `infirmiere` int NOT NULL,
   `date_debut` date NOT NULL,
   `date_fin` date NOT NULL,
   `heure_deb` time DEFAULT NULL,
   `heure_fin` time DEFAULT NULL,
-  `categorie` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `categorie` int NOT NULL,
+  PRIMARY KEY (`infirmiere`,`date_debut`),
+  KEY `infirmiere` (`infirmiere`),
+  KEY `categorie` (`categorie`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-CREATE TABLE `infirmiere` (
-  `id` int(11) NOT NULL,
-  `fichier_photo` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `infirmiere`
+--
+
+DROP TABLE IF EXISTS `infirmiere`;
+CREATE TABLE IF NOT EXISTS `infirmiere` (
+  `id` int NOT NULL,
+  `fichier_photo` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `infirmiere`
+--
 
 INSERT INTO `infirmiere` (`id`, `fichier_photo`) VALUES
 (2, NULL),
@@ -219,12 +320,25 @@ INSERT INTO `infirmiere` (`id`, `fichier_photo`) VALUES
 (12, NULL),
 (17, NULL);
 
-CREATE TABLE `infirmiere_badge` (
-  `id_infirmiere` int(11) NOT NULL,
-  `id_badge` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `infirmiere_badge`
+--
+
+DROP TABLE IF EXISTS `infirmiere_badge`;
+CREATE TABLE IF NOT EXISTS `infirmiere_badge` (
+  `id_infirmiere` int NOT NULL,
+  `id_badge` int NOT NULL,
   `date_deb` date NOT NULL,
-  `date_fin` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `date_fin` date DEFAULT NULL,
+  PRIMARY KEY (`id_infirmiere`,`id_badge`,`date_deb`),
+  KEY `id_badge` (`id_badge`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `infirmiere_badge`
+--
 
 INSERT INTO `infirmiere_badge` (`id_infirmiere`, `id_badge`, `date_deb`, `date_fin`) VALUES
 (2, 2, '2016-02-02', NULL),
@@ -253,23 +367,46 @@ INSERT INTO `infirmiere_badge` (`id_infirmiere`, `id_badge`, `date_deb`, `date_f
 (17, 26, '2022-01-01', NULL),
 (17, 29, '2022-03-01', NULL);
 
-CREATE TABLE `lieu_convalescence` (
-  `id` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `lieu_convalescence`
+--
+
+DROP TABLE IF EXISTS `lieu_convalescence`;
+CREATE TABLE IF NOT EXISTS `lieu_convalescence` (
+  `id` int NOT NULL,
   `titre` text NOT NULL,
   `ad1` varchar(255) NOT NULL,
   `ad2` varchar(255) NOT NULL,
   `cp` char(5) NOT NULL,
   `ville` varchar(255) NOT NULL,
   `tel_fixe` char(10) NOT NULL,
-  `contact` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `contact` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `contact` (`contact`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-CREATE TABLE `patient` (
-  `id` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `patient`
+--
+
+DROP TABLE IF EXISTS `patient`;
+CREATE TABLE IF NOT EXISTS `patient` (
+  `id` int NOT NULL,
   `informations_medicales` text NOT NULL,
-  `personne_de_confiance` int(11) DEFAULT NULL,
-  `infirmiere_souhait` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `personne_de_confiance` int DEFAULT NULL,
+  `infirmiere_souhait` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `personne_de_confiance` (`personne_de_confiance`),
+  KEY `infirmiere_souhait` (`infirmiere_souhait`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `patient`
+--
 
 INSERT INTO `patient` (`id`, `informations_medicales`, `personne_de_confiance`, `infirmiere_souhait`) VALUES
 (5, '', 1, 3),
@@ -281,8 +418,15 @@ INSERT INTO `patient` (`id`, `informations_medicales`, `personne_de_confiance`, 
 (14, '', NULL, NULL),
 (16, '', NULL, NULL);
 
-CREATE TABLE `personne` (
-  `id` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `personne`
+--
+
+DROP TABLE IF EXISTS `personne`;
+CREATE TABLE IF NOT EXISTS `personne` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(100) NOT NULL,
   `prenom` varchar(100) NOT NULL,
   `sexe` char(1) NOT NULL,
@@ -290,40 +434,59 @@ CREATE TABLE `personne` (
   `date_deces` date DEFAULT NULL,
   `ad1` varchar(100) DEFAULT NULL,
   `ad2` varchar(100) DEFAULT NULL,
-  `cp` int(5) DEFAULT NULL,
+  `cp` int DEFAULT NULL,
   `ville` varchar(100) DEFAULT NULL,
   `tel_fixe` varchar(15) DEFAULT NULL,
   `tel_port` varchar(15) DEFAULT NULL,
-  `mail` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `mail` varchar(30) DEFAULT NULL,
+  `fonction` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb3;
 
-INSERT INTO `personne` (`id`, `nom`, `prenom`, `sexe`, `date_naiss`, `date_deces`, `ad1`, `ad2`, `cp`, `ville`, `tel_fixe`, `tel_port`, `mail`) VALUES
-(1, 'Lagaffe', 'Gaston', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 'Nightingale', 'Florence', 'F', '2017-05-07', NULL, 'mmm', NULL, 44000, 'nantes', '', '', 'test1234'),
-(3, 'lwald', 'lwald', 'F', '2019-10-20', NULL, '', NULL, 0, '', '0101010101', '0606060606', 'Jeanne@spirou.fr'),
-(4, 'Henderson', 'Virginia', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(5, 'Fantassio', 'Archimede', 'H', '1954-10-06', NULL, '4 rue Fléchier', NULL, 44000, 'NANTES', '0901010101', '060101010101', 'Fantassio@gmail.com'),
-(6, 'Prunelle', 'Léon', 'H', '1944-12-25', NULL, '54 Rue de la Mélinière', NULL, 44000, 'NANTES', '0901020304', '0601020304', 'Prunelle@gmail.com'),
-(7, 'Lebrac', 'Yves', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(8, 'Boulier', 'Joseph', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(9, 'De Mesmaeker', 'Aimé', 'H', '1947-01-07', NULL, '3 rue du chantier naval', NULL, 44000, 'NANTES', '0901010101', '0601010101', 'DeMesmaeker@gmail.com'),
-(10, 'Molaire', 'Mélanie', 'F', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(11, 'Labévue', 'Bertrand', 'H', '1972-07-19', NULL, '37 rue de l\'oubli', NULL, 44250, 'Saint-Brevin-les-Pins', '0901010101', '0601010101', 'Labevub@gmail.com'),
-(12, 'jeanne', 'jeanne', '', '1965-04-20', NULL, '5 rue du pain', NULL, 44100, 'nantes', '', '0632085145', 'jeanne@jeanne.jeanne'),
-(13, 'Soutier', 'Jules', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(14, 'Longtarin', 'Joseph', 'H', '1965-03-04', NULL, '55 rue de la santé', NULL, 44320, 'Saint-Père-en-Retz', '0903030303', '0603030303', 'LongtarinJ@gmail.com'),
-(15, 'Ducran & Lapoigne', '', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(16, 'Père Gustave', '', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(17, 'kilian', 'kilian', 'H', '1994-05-22', NULL, '3 rue du Moulin Blanc', NULL, 29000, 'BREST', NULL, '0611223344', 'kilian@gmail.com'),
-(19, 'hoiu', 'oiuyo', 'm', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+--
+-- Déchargement des données de la table `personne`
+--
 
-CREATE TABLE `personne_login` (
-  `id` int(11) NOT NULL,
+INSERT INTO `personne` (`id`, `nom`, `prenom`, `sexe`, `date_naiss`, `date_deces`, `ad1`, `ad2`, `cp`, `ville`, `tel_fixe`, `tel_port`, `mail`, `fonction`) VALUES
+(1, 'Lagaffe', 'Gaston', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'Nightingale', 'Florence', 'F', '2017-05-07', NULL, 'mmm', NULL, 44000, 'nantes', '', '', 'test1234', 1),
+(3, 'lwald', 'lwald', 'F', '2019-10-20', NULL, '', NULL, 0, '', '0101010101', '0606060606', 'Jeanne@spirou.fr', 1),
+(4, 'Henderson', 'Virginia', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(5, 'Fantassio', 'Archimede', 'H', '1954-10-06', NULL, '4 rue Fléchier', NULL, 44000, 'NANTES', '0901010101', '060101010101', 'Fantassio@gmail.com', 0),
+(6, 'Prunelle', 'Léon', 'H', '1944-12-25', NULL, '54 Rue de la Mélinière', NULL, 44000, 'NANTES', '0901020304', '0601020304', 'Prunelle@gmail.com', 0),
+(7, 'Lebrac', 'Yves', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 'Boulier', 'Joseph', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3),
+(9, 'De Mesmaeker', 'Aimé', 'H', '1947-01-07', NULL, '3 rue du chantier naval', NULL, 44000, 'NANTES', '0901010101', '0601010101', 'DeMesmaeker@gmail.com', 0),
+(10, 'Molaire', 'Mélanie', 'F', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(11, 'Labévue', 'Bertrand', 'H', '1972-07-19', NULL, '37 rue de l\'oubli', NULL, 44250, 'Saint-Brevin-les-Pins', '0901010101', '0601010101', 'Labevub@gmail.com', 0),
+(12, 'jeanne', 'jeanne', '', '1965-04-20', NULL, '5 rue du pain', NULL, 44100, 'nantes', '', '0632085145', 'jeanne@jeanne.jeanne', 2),
+(13, 'Soutier', 'Jules', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(14, 'Longtarin', 'Joseph', 'H', '1965-03-04', NULL, '55 rue de la santé', NULL, 44320, 'Saint-Père-en-Retz', '0903030303', '0603030303', 'LongtarinJ@gmail.com', 0),
+(15, 'Ducran & Lapoigne', '', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(16, 'Père Gustave', '', 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(17, 'kilian', 'kilian', 'H', '1994-05-22', NULL, '3 rue du Moulin Blanc', NULL, 29000, 'BREST', NULL, '0611223344', 'kilian@gmail.com', 1),
+(19, 'hoiu', 'oiuyo', 'm', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(20, 'Boulaamail', 'Eliazid', 'H', '2003-08-11', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `personne_login`
+--
+
+DROP TABLE IF EXISTS `personne_login`;
+CREATE TABLE IF NOT EXISTS `personne_login` (
+  `id` int NOT NULL,
   `login` varchar(25) NOT NULL,
   `mp` char(32) NOT NULL,
   `derniere_connexion` date DEFAULT NULL,
-  `nb_tentative_erreur` int(5) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `nb_tentative_erreur` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `personne_login`
+--
 
 INSERT INTO `personne_login` (`id`, `login`, `mp`, `derniere_connexion`, `nb_tentative_erreur`) VALUES
 (1, 'glagaffe', '09b44c0c838be81fb8aeb2a9a972a0e6', NULL, 0),
@@ -340,17 +503,32 @@ INSERT INTO `personne_login` (`id`, `login`, `mp`, `derniere_connexion`, `nb_ten
 (13, 'jsoutier', '870a842c4116de2c0bda8e6fbe30e3be', NULL, 0),
 (14, 'jlongtarin', '7a1f9f915d1daca480cd64487d1e1677', NULL, 0),
 (16, 'gustave', 'e71d4f161eed99577821e3d5bf018f38', NULL, 0),
-(17, 'kilian', 'dd1c7d693c6654ee8d38b65dd5467408', NULL, 0);
+(17, 'kilian', 'dd1c7d693c6654ee8d38b65dd5467408', NULL, 0),
+(20, 'eliazid', '6d9fb59545d89527aed00256969cbce5', NULL, 0);
 
-CREATE TABLE `soins` (
-  `id_categ_soins` int(11) NOT NULL,
-  `id_type_soins` int(11) NOT NULL,
-  `id` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `soins`
+--
+
+DROP TABLE IF EXISTS `soins`;
+CREATE TABLE IF NOT EXISTS `soins` (
+  `id_categ_soins` int NOT NULL,
+  `id_type_soins` int NOT NULL,
+  `id` int NOT NULL,
   `libel` text NOT NULL,
   `description` text,
   `coefficient` float NOT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_categ_soins`,`id_type_soins`,`id`),
+  KEY `id_categ_soins` (`id_categ_soins`),
+  KEY `id_type_soins` (`id_type_soins`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `soins`
+--
 
 INSERT INTO `soins` (`id_categ_soins`, `id_type_soins`, `id`, `libel`, `description`, `coefficient`, `date`) VALUES
 (1, 1, 1, 'Prélèvement par ponction veineuse directe', NULL, 1.5, '2016-11-17 19:31:10'),
@@ -443,14 +621,31 @@ INSERT INTO `soins` (`id_categ_soins`, `id_type_soins`, `id`, `libel`, `descript
 (2, 6, 3, 'Dialyse péritonéale par cycleur :\r\n- branchement ou débranchement, par séance', NULL, 4, '2016-11-17 20:47:28'),
 (2, 6, 4, 'Dialyse péritonéale par cycleur :\r\norganisation de la surveillance, par période de douze heures ', NULL, 4, '2016-11-17 20:47:28');
 
-CREATE TABLE `soins_visite` (
-  `visite` int(11) NOT NULL,
-  `id_categ_soins` int(11) NOT NULL,
-  `id_type_soins` int(11) NOT NULL,
-  `id_soins` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `soins_visite`
+--
+
+DROP TABLE IF EXISTS `soins_visite`;
+CREATE TABLE IF NOT EXISTS `soins_visite` (
+  `visite` int NOT NULL,
+  `id_categ_soins` int NOT NULL,
+  `id_type_soins` int NOT NULL,
+  `id_soins` int NOT NULL,
   `prevu` tinyint(1) NOT NULL,
-  `realise` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `realise` tinyint(1) NOT NULL,
+  PRIMARY KEY (`visite`,`id_categ_soins`,`id_type_soins`,`id_soins`),
+  KEY `id_categ_soins` (`id_categ_soins`),
+  KEY `id_type_soins` (`id_type_soins`),
+  KEY `id_soins` (`id_soins`),
+  KEY `visite` (`visite`),
+  KEY `FK1` (`id_categ_soins`,`id_type_soins`,`id_soins`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `soins_visite`
+--
 
 INSERT INTO `soins_visite` (`visite`, `id_categ_soins`, `id_type_soins`, `id_soins`, `prevu`, `realise`) VALUES
 (1, 1, 1, 10, 1, 0),
@@ -473,32 +668,68 @@ INSERT INTO `soins_visite` (`visite`, `id_categ_soins`, `id_type_soins`, `id_soi
 (9, 1, 1, 7, 1, 0),
 (9, 1, 2, 5, 1, 0);
 
-CREATE TABLE `temoignage` (
-  `id` int(11) NOT NULL,
-  `personne_login` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `temoignage`
+--
+
+DROP TABLE IF EXISTS `temoignage`;
+CREATE TABLE IF NOT EXISTS `temoignage` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personne_login` int NOT NULL,
   `contenu` mediumtext NOT NULL,
   `date` datetime NOT NULL,
-  `valide` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `valide` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `personne_login` (`personne_login`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `temoignage`
+--
 
 INSERT INTO `temoignage` (`id`, `personne_login`, `contenu`, `date`, `valide`) VALUES
 (1, 1, 'M\'enfin...', '0000-00-00 00:00:00', 1),
 (2, 9, 'Je suis citoyen Russe, laissez-moi téléphoner à l´ambassade du Maroc!', '0000-00-00 00:00:00', 0),
 (3, 6, 'Rogntudjuù!!', '0000-00-00 00:00:00', 0);
 
-CREATE TABLE `token` (
-  `id` int(11) NOT NULL,
-  `id_login` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `jeton` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
 
-CREATE TABLE `type_soins` (
-  `id_categ_soins` int(11) NOT NULL,
-  `id_type_soins` int(11) NOT NULL,
+--
+-- Structure de la table `token`
+--
+
+DROP TABLE IF EXISTS `token`;
+CREATE TABLE IF NOT EXISTS `token` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_login` int NOT NULL,
+  `date` datetime NOT NULL,
+  `jeton` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_login` (`id_login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `type_soins`
+--
+
+DROP TABLE IF EXISTS `type_soins`;
+CREATE TABLE IF NOT EXISTS `type_soins` (
+  `id_categ_soins` int NOT NULL,
+  `id_type_soins` int NOT NULL,
   `libel` text NOT NULL,
-  `description` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `description` text,
+  PRIMARY KEY (`id_categ_soins`,`id_type_soins`),
+  KEY `id_categ_soins` (`id_categ_soins`),
+  KEY `id_type_soins` (`id_type_soins`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `type_soins`
+--
 
 INSERT INTO `type_soins` (`id_categ_soins`, `id_type_soins`, `libel`, `description`) VALUES
 (1, 1, 'Prélèvements et injections', ''),
@@ -520,16 +751,30 @@ INSERT INTO `type_soins` (`id_categ_soins`, `id_type_soins`, `libel`, `descripti
 (2, 6, 'Prise en charge à domicile d’un patient insulino-traité', ''),
 (2, 7, 'Soins portant sur l\'appareil digestif et urinaire', '');
 
-CREATE TABLE `visite` (
-  `id` int(11) NOT NULL,
-  `patient` int(11) NOT NULL,
-  `infirmiere` int(11) NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `visite`
+--
+
+DROP TABLE IF EXISTS `visite`;
+CREATE TABLE IF NOT EXISTS `visite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `patient` int NOT NULL,
+  `infirmiere` int NOT NULL,
   `date_prevue` datetime NOT NULL,
   `date_reelle` datetime DEFAULT NULL,
-  `duree` int(11) NOT NULL,
+  `duree` int NOT NULL,
   `compte_rendu_infirmiere` text,
-  `compte_rendu_patient` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `compte_rendu_patient` text,
+  PRIMARY KEY (`id`),
+  KEY `patient` (`patient`),
+  KEY `infirmiere` (`infirmiere`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
+
+--
+-- Déchargement des données de la table `visite`
+--
 
 INSERT INTO `visite` (`id`, `patient`, `infirmiere`, `date_prevue`, `date_reelle`, `duree`, `compte_rendu_infirmiere`, `compte_rendu_patient`) VALUES
 (1, 5, 3, '2024-05-18 14:00:00', '0000-00-00 00:00:00', 60, '', NULL),
@@ -538,121 +783,35 @@ INSERT INTO `visite` (`id`, `patient`, `infirmiere`, `date_prevue`, `date_reelle
 (4, 5, 3, '2024-05-18 16:30:00', '0000-00-00 00:00:00', 45, '', NULL),
 (6, 9, 3, '2024-06-02 09:15:00', '0000-00-00 00:00:00', 40, '', NULL),
 (7, 11, 3, '2024-06-01 15:20:00', '0000-00-00 00:00:00', 35, '', NULL),
-(8, 14, 3, '2024-06-02 16:40:00', '0000-00-00 00:00:00', 33, '', NULL),
-(9, 9, 3, '2024-05-31 14:00:00', '0000-00-00 00:00:00', 50, NULL, NULL);
+(8, 14, 3, '2024-06-02 16:40:00', '0000-00-00 00:00:00', 33, '', NULL);
 
+--
+-- Contraintes pour les tables déchargées
+--
 
-ALTER TABLE `administrateur`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `badge`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `categorie_indisponibilite`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `categ_soins`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `chambre_forte`
-  ADD PRIMARY KEY (`badge`,`date`);
-
-ALTER TABLE `convalescence`
-  ADD PRIMARY KEY (`id_patient`,`id_lieux`,`date_deb`),
-  ADD KEY `id_lieux` (`id_lieux`);
-
-ALTER TABLE `indisponibilite`
-  ADD PRIMARY KEY (`infirmiere`,`date_debut`),
-  ADD KEY `infirmiere` (`infirmiere`),
-  ADD KEY `categorie` (`categorie`);
-
-ALTER TABLE `infirmiere`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `infirmiere_badge`
-  ADD PRIMARY KEY (`id_infirmiere`,`id_badge`,`date_deb`),
-  ADD KEY `id_badge` (`id_badge`);
-
-ALTER TABLE `lieu_convalescence`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `contact` (`contact`);
-
-ALTER TABLE `patient`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `personne_de_confiance` (`personne_de_confiance`),
-  ADD KEY `infirmiere_souhait` (`infirmiere_souhait`);
-
-ALTER TABLE `personne`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `personne_login`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `soins`
-  ADD PRIMARY KEY (`id_categ_soins`,`id_type_soins`,`id`),
-  ADD KEY `id_categ_soins` (`id_categ_soins`),
-  ADD KEY `id_type_soins` (`id_type_soins`);
-
-ALTER TABLE `soins_visite`
-  ADD PRIMARY KEY (`visite`,`id_categ_soins`,`id_type_soins`,`id_soins`),
-  ADD KEY `id_categ_soins` (`id_categ_soins`),
-  ADD KEY `id_type_soins` (`id_type_soins`),
-  ADD KEY `id_soins` (`id_soins`),
-  ADD KEY `visite` (`visite`),
-  ADD KEY `FK1` (`id_categ_soins`,`id_type_soins`,`id_soins`);
-
-ALTER TABLE `temoignage`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `personne_login` (`personne_login`);
-
-ALTER TABLE `token`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_login` (`id_login`);
-
-ALTER TABLE `type_soins`
-  ADD PRIMARY KEY (`id_categ_soins`,`id_type_soins`),
-  ADD KEY `id_categ_soins` (`id_categ_soins`),
-  ADD KEY `id_type_soins` (`id_type_soins`);
-
-ALTER TABLE `visite`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `patient` (`patient`),
-  ADD KEY `infirmiere` (`infirmiere`);
-
-
-ALTER TABLE `badge`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
-
-ALTER TABLE `categorie_indisponibilite`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
-
-ALTER TABLE `categ_soins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
-ALTER TABLE `personne`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
-ALTER TABLE `temoignage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
-ALTER TABLE `token`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `visite`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
-
+--
+-- Contraintes pour la table `infirmiere`
+--
 ALTER TABLE `infirmiere`
   ADD CONSTRAINT `infirmiere_ibfk_1` FOREIGN KEY (`id`) REFERENCES `personne` (`id`);
 
+--
+-- Contraintes pour la table `patient`
+--
 ALTER TABLE `patient`
   ADD CONSTRAINT `patient_ibfk_1` FOREIGN KEY (`id`) REFERENCES `personne` (`id`),
   ADD CONSTRAINT `patient_ibfk_2` FOREIGN KEY (`personne_de_confiance`) REFERENCES `personne` (`id`),
   ADD CONSTRAINT `patient_ibfk_3` FOREIGN KEY (`infirmiere_souhait`) REFERENCES `infirmiere` (`id`);
 
+--
+-- Contraintes pour la table `type_soins`
+--
 ALTER TABLE `type_soins`
   ADD CONSTRAINT `type_soins_ibfk_1` FOREIGN KEY (`id_categ_soins`) REFERENCES `categ_soins` (`id`);
 
+--
+-- Contraintes pour la table `visite`
+--
 ALTER TABLE `visite`
   ADD CONSTRAINT `visite_ibfk_1` FOREIGN KEY (`patient`) REFERENCES `patient` (`id`),
   ADD CONSTRAINT `visite_ibfk_2` FOREIGN KEY (`infirmiere`) REFERENCES `infirmiere` (`id`);
